@@ -1,2 +1,36 @@
 ---
 # tasks file for deploy_apache_web
+- name: Say Hello to ALL              #Название задачи
+  debug: msg="Hello {{ item }}"       #Используемые модуль. В данном случае debug. Системная переменная item
+  loop:                               #loop как список переменных
+    - "Vasya"
+    - "Petya"
+    - "Masha"
+    - "Igor" 
+- name: Loop Until example                          #Название задачи
+  shell: echo -n Z >> myfile.txt && cat myfile.txt  #Используемые модуль. В данном случае shell. Системная переменная item
+  register: output                                  #Записывает в переменную output вывод из команды выше
+  delay: 2                                          #Выполняет задержку между командами
+  retries: 10                                       #Повтор цикла в течении 10 раз
+  until: output.stdout.find("ZZZZ") == false        #Цикл выполняется либо через 10 раз либо пока в переменную output не запишется ZZZZ
+
+- name: Print Final Output                          #Название задачи
+  debug:                                            #Используемые модуль. В данном случае debug. 
+    var: output.stdout                              #Переменная которую необходимо вывести
+
+- block:        #==============Block for UBUNTU=============#     # Создаем блок 
+    - name: Install nginx for Debian                              #Название задачи
+      apt: name=nginx state=latest                                #Используемые модуль apt. Который устанавливает последнюю версию nginx
+      notify: Restart nginx Debian                                #Вызывается handlers по имени Restart nginx Debian
+
+    - name: Start nginx for Debian                                #Название задачи
+      service: name=nginx state=started enabled=yes               #Используемые модуль service. Который стартует сервис nginx и ставит его в автозагрузку
+
+  when: ansible_os_family == "Debian"                             #Блок выполняется когда выполняется условие ansible_os_family == "Ubuntu" 
+
+- name: Copy HomePage file to Web Server
+  copy: src={{ item }} dest={{ destin_folder }} mode=0555  #Используем модуль copy. используеюстя переменные
+  loop:                                                                        #Список переменных
+    - pet_care.png
+  notify:
+    - Restart nginx Debian  

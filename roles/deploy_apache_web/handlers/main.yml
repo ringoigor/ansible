@@ -1,2 +1,4 @@
 ---
 # handlers file for deploy_apache_web
+- name: Restart nginx Debian                        #Название задачи
+  service: name=nginx state=restarted               #Используемые модуль service, который рестарует nginx
