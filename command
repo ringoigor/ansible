@@ -1,0 +1,1 @@
+ansible-galaxy init deploy_apache_web -  создать директорию ролей
