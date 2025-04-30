@@ -1,0 +1,32 @@
+---
+- name: My Super Playbook
+  hosts: all
+  become: yes
+
+  vars:
+    mytext: "Hello mr. Igor"  
+
+  tasks:
+    - name: Ping test
+      ping:
+
+    - name: Unregister Server from Load Balancer
+      shell: echo This server {{ inventory_hostname }} was deregistered from out Load Balancer, node name is {{ ansible_nodename }} >> /home/igor/log.txt
+      delegate_to: localh
+
+    - name: Create file1
+      copy:
+        dest: /home/igor/file1.txt 
+        content: |
+          This if FileN1
+          On ENGLISH Hello world
+          On Russian {{ mytext }}
+      delegate_to: ubuntu
+
+    - name: Create file2
+      copy:
+        dest: /home/igor/file2.txt 
+        content: |
+          This is FileN2
+          On ENGLISH Hello world
+          On RUSSIAN {{ mytext }}

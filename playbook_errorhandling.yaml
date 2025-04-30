@@ -1,0 +1,16 @@
+---
+- name: Ansible lesson 19
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Task Number1
+      apt: name=treeeee state=latest
+      ignore_errors: true
+
+    - name: Task Number2
+      shell: echo HelloWorld!
+      register: results
+
+    - name: Task Number3
+      shell: echo Privet

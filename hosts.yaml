@@ -1,6 +1,10 @@
 my_server:
   hosts:
     ubuntu:
-        ansible_host:                   192.168.0.107
+        ansible_host:                   192.168.0.104
 
+local_host:
+  hosts:
+    localh:
+        ansible_host:                   127.0.0.1
 

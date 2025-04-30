@@ -2,6 +2,7 @@
   - name: "Name Game"                       #Имя игры  
     hosts: ubuntu                           #Хост на котором необходимо выполнить задачи
     become: yes                             #Выполнить под суперпользователем
+    any_errors_fatal: true                  #Если будет хоть одная ошибка, то прекращается весь плейбук
 
     vars:                                   #Создание меременных
       source_folder: ~/ansible/roles/deploy_apache_web/files/
@@ -42,6 +43,18 @@
           - pet_care.png
         notify:
           - Restart nginx Debian                                                     #Вызывается handlers estart nginx Debian 
+        delegate_to: ubuntu                                                          #Задача запускается только на указанном сервере, остальные игонорируются
+        ignore_errors: true                                                          #При ошибке плейбук не прерывается, а продолжается дальше выполнение задач, игнорируя текущуу задачу
+
+      - name: Unregister Server from Load Balancer
+        shell: echo This server {{ inventory_hostname }} was deregistered from out Load Balancer, node name is {{ ansible_nodename }} >> /home/igor/log.txt  #Используемые модуль shell, который записывает в лог и делегирует его с помощью delegate_to на локальный сервер
+        delegate_to: localh                                               
+
+      - name: Task Number2                               #Название задачи                       
+        shell: echo Hello World!                         #модулем shell пишем 
+        register: results                                #Сохраняем вывод верхней строки в переменную result
+        failed_when: "'World' in results.stdout"         #Вывести ошибку, если в потоке вывода переменной result присутствует слово World
+      # failed_when: results.rc == 0                     #Вывести ошибку, если в return code не равен 0
 
     handlers:                                             #Задача которая запускается по команде notify
       - name: Restart nginx Debian                        #Название задачи
